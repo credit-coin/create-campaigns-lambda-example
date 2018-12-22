@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    Create Campaigns 
+    
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 3
+
+Resources:
+    CreateCampaignFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            Handler: index.createCampaign
+            Runtime: nodejs8.10
+            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+                Variables: # setup database connection info in environment variables
+                    DATABASE: "" 
+                    USERNAME: ""
+                    PASSWORD: ""
+                    HOST: ""
+            Events:
+                CreateCampaignAPI: #Assuming API Gateway is used here
+                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                    Properties:
+                        Path: /create-campaign
+                        Method: post
+Outputs:
+    HelloWorldApi:
+      Description: "API Gateway endpoint URL for Prod stage for CreateCampaignfunction"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-campaign/" # may need to update this
+
+    CreateCampaignFunction:
+      Description: "CreateCampaignLambda Function ARN"
+      Value: !GetAtt CreateCampaignFunction.Arn # update
+
+    CreateCampaignFunctionIamRole:
+      Description: "Implicit IAM Role created for CreateCampaign function"
+      Value: !GetAtt CreateCampaignRole.Arn # update 
